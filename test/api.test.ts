@@ -90,7 +90,7 @@ describe("single lookups", () => {
     });
   });
 
-  it("getVillage matches the API's merged villages.json shape", () => {
+  it("getVillage nests commune, district and province", () => {
     const village = getVillage("1020101");
     expect(village).toEqual({
       ...OU_THUM,

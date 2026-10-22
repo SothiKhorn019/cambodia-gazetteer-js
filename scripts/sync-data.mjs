@@ -15,7 +15,6 @@
  * nested parents in the release, for every record, so the runtime can rely on it.
  */
 
-import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 
 const SOURCE_REPO = "SothiKhorn019/cambodia-gazetteer";
@@ -49,46 +48,17 @@ if (!tag || !/^v\d+\.\d+\.\d+/.test(tag)) {
 const errors = [];
 const fail = (msg) => errors.push(msg);
 
-// A token is needed while the source repo is private: GITHUB_TOKEN / GH_TOKEN,
-// else the GitHub CLI's login. Without one, fall back to public download URLs.
-function githubToken() {
-  const fromEnv = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-  if (fromEnv) return fromEnv;
-  try {
-    return execFileSync("gh", ["auth", "token"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
-  } catch {
-    return undefined;
-  }
-}
-
-async function get(url, headers) {
-  const res = await fetch(url, { headers });
+async function download(level) {
+  const url = `https://github.com/${SOURCE_REPO}/releases/download/${tag}/${level}.json`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`GET ${url} -> ${res.status} ${res.statusText}`);
-  return res;
-}
-
-async function downloadAll() {
-  const token = githubToken();
-  if (!token) {
-    const base = `https://github.com/${SOURCE_REPO}/releases/download/${tag}`;
-    return Promise.all(LEVELS.map(async (level) => (await get(`${base}/${level}.json`)).json()));
-  }
-  const auth = { Authorization: `Bearer ${token}`, "X-GitHub-Api-Version": "2022-11-28" };
-  const release = await (
-    await get(`https://api.github.com/repos/${SOURCE_REPO}/releases/tags/${tag}`, auth)
-  ).json();
-  return Promise.all(
-    LEVELS.map(async (level) => {
-      const asset = release.assets.find((a) => a.name === `${level}.json`);
-      if (!asset) throw new Error(`Release ${tag} has no ${level}.json asset`);
-      return (await get(asset.url, { ...auth, Accept: "application/octet-stream" })).json();
-    }),
-  );
+  return res.json();
 }
 
 console.log(`Downloading ${SOURCE_REPO}@${tag} ...`);
-const downloaded = await downloadAll();
-const merged = Object.fromEntries(LEVELS.map((level, i) => [level, downloaded[i]]));
+const merged = Object.fromEntries(
+  await Promise.all(LEVELS.map(async (level) => [level, await download(level)])),
+);
 
 const codeSets = {};
 for (const level of LEVELS) {

@@ -12,8 +12,6 @@ Cambodia's administrative divisions — **province → district → commune → 
 | Communes (ឃុំ / សង្កាត់) | 1,652 |
 | Villages (ភូមិ) | 14,570 |
 
-The records are the same as the hosted API at <https://cambodia-gazetteer.web.app>, with the same codes and field names.
-
 ## Install
 
 ```sh
@@ -93,7 +91,7 @@ import provinces from "@sothikhorn/cambodia-gazetteer/data/provinces.json" with 
 // also: data/districts.json, data/communes.json, data/villages.json, data/meta.json
 ```
 
-## API
+## Functions
 
 | Function | Returns |
 |----------|---------|
@@ -110,11 +108,11 @@ import provinces from "@sothikhorn/cambodia-gazetteer/data/provinces.json" with 
 | `normalizeCode(code)` · `parentCode(code)` · `levelOf(code)` | code helpers (see below) |
 | `meta` | `{ datasetVersion, source, counts }`: which dataset release is bundled |
 
-Lists contain `{ code, name, en_name }`, where `name` is Khmer and `en_name` is Latin. Single lookups return the same nested shape as the API's merged files (`villages.json` and so on). That means you can switch between the API and this package without changing code. Returned arrays are copies, and records are frozen.
+Lists contain `{ code, name, en_name }`, where `name` is Khmer and `en_name` is Latin. Single lookups add the record's parents as nested objects: `province` for a district, `district` and `province` for a commune, and `commune`, `district` and `province` for a village. Returned arrays are copies, and records are frozen.
 
 ## Codes
 
-Codes come from NCDD and match the hosted API exactly. Provinces 01–09 have **no leading zero** below province level:
+Codes are NCDD's, exactly as they appear in the source data. Provinces 01–09 have **no leading zero** below province level:
 
 | | Province | District | Commune | Village |
 |-|----------|----------|---------|---------|
@@ -125,7 +123,7 @@ A parent's code is the child's code without its last two digits. Every function 
 
 ## Bundle size
 
-All data is bundled: about 1.1 MB minified, or about 220 KB gzipped, and the village list is most of that. Each level is only built on first use, and bundlers drop levels you never call. A bundle that only uses `getProvinces` comes to about 2 KB. If a browser app needs villages but you don't want to ship them, fetch them per commune from the [hosted API](https://cambodia-gazetteer.web.app) instead (for example `/villages/{communeCode}.json`).
+All data is bundled: about 1.1 MB minified, or about 220 KB gzipped, and the village list is most of that. Each level is only built on first use, and bundlers drop levels you never call. A bundle that only uses `getProvinces` comes to about 2 KB.
 
 ## Data source and license
 
@@ -145,4 +143,4 @@ npm version minor               # data refresh = minor (major if codes are remov
 git push --follow-tags          # CI publishes to npm and creates a GitHub Release
 ```
 
-`sync` checks every record before writing anything. Codes must be unique, and each record's code-derived parents must equal the nested parents in the release. While the dataset repo is private, `sync` authenticates with `GITHUB_TOKEN` or your `gh` login.
+`sync` checks every record before writing anything. Codes must be unique, and each record's code-derived parents must equal the nested parents in the release.
