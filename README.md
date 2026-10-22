@@ -1,6 +1,6 @@
 # Cambodia Gazetteer (npm)
 
-[![npm](https://img.shields.io/npm/v/@sothikhorn019/cambodia-gazetteer)](https://www.npmjs.com/package/@sothikhorn019/cambodia-gazetteer)
+[![npm](https://img.shields.io/npm/v/@sothikhorn/cambodia-gazetteer)](https://www.npmjs.com/package/@sothikhorn/cambodia-gazetteer)
 [![CI](https://github.com/SothiKhorn019/cambodia-gazetteer-js/actions/workflows/ci.yml/badge.svg)](https://github.com/SothiKhorn019/cambodia-gazetteer-js/actions/workflows/ci.yml)
 
 Cambodia's administrative divisions — **province → district → commune → village** — in Khmer and English, bundled as data with typed lookups. Works offline and has no dependencies. Runs in Node 18+ and any bundler, from both ESM and CommonJS.
@@ -17,13 +17,13 @@ The records are the same as the hosted API at <https://cambodia-gazetteer.web.ap
 ## Install
 
 ```sh
-npm install @sothikhorn019/cambodia-gazetteer
+npm install @sothikhorn/cambodia-gazetteer
 ```
 
 ## Usage
 
 ```js
-import { getProvinces, getDistricts, getCommunes, getVillages, getVillage } from "@sothikhorn019/cambodia-gazetteer";
+import { getProvinces, getDistricts, getCommunes, getVillages, getVillage } from "@sothikhorn/cambodia-gazetteer";
 
 getProvinces();
 // [{ code: "01", name: "បន្ទាយមានជ័យ", en_name: "Banteay Meanchey" }, ...]
@@ -44,14 +44,14 @@ getVillage("1020101");
 CommonJS works too:
 
 ```js
-const { getProvince } = require("@sothikhorn019/cambodia-gazetteer");
+const { getProvince } = require("@sothikhorn/cambodia-gazetteer");
 getProvince("12"); // { code: "12", name: "ភ្នំពេញ", en_name: "Phnom Penh" }
 ```
 
 ### Look up any code, or search by name
 
 ```js
-import { lookup, search } from "@sothikhorn019/cambodia-gazetteer";
+import { lookup, search } from "@sothikhorn/cambodia-gazetteer";
 
 lookup("10201");
 // { level: "commune", code: "10201", name: "បន្ទាយនាង", en_name: "Banteay Neang", district: {...}, province: {...} }
@@ -66,7 +66,7 @@ search("Banteay", { level: ["district", "commune"], limit: 10 });
 ### Cascading dropdowns
 
 ```js
-import { getProvinces, getDistricts, getCommunes, getVillages } from "@sothikhorn019/cambodia-gazetteer";
+import { getProvinces, getDistricts, getCommunes, getVillages } from "@sothikhorn/cambodia-gazetteer";
 
 const options = (items) => items.map((d) => ({ value: d.code, label: `${d.name} (${d.en_name})` }));
 
@@ -81,7 +81,7 @@ communeSelect.onchange  = (e) => (villageSelect.options = options(getVillages(e.
 Types are included:
 
 ```ts
-import type { Province, District, VillageDetail, LookupResult, Level } from "@sothikhorn019/cambodia-gazetteer";
+import type { Province, District, VillageDetail, LookupResult, Level } from "@sothikhorn/cambodia-gazetteer";
 ```
 
 ### Raw JSON
@@ -89,7 +89,7 @@ import type { Province, District, VillageDetail, LookupResult, Level } from "@so
 The data files ship with the package if you'd rather use them directly. They hold flat `{ code, name, en_name }` records:
 
 ```js
-import provinces from "@sothikhorn019/cambodia-gazetteer/data/provinces.json" with { type: "json" };
+import provinces from "@sothikhorn/cambodia-gazetteer/data/provinces.json" with { type: "json" };
 // also: data/districts.json, data/communes.json, data/villages.json, data/meta.json
 ```
 

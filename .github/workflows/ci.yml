@@ -58,7 +58,7 @@ jobs:
         working-directory: smoke
         run: |
           node -e '
-            const g = require("@sothikhorn019/cambodia-gazetteer");
+            const g = require("@sothikhorn/cambodia-gazetteer");
             const v = g.getVillage("1020101");
             if (g.getProvinces().length !== 25 || v.province.en_name !== "Banteay Meanchey") process.exit(1);
             console.log("CJS ok:", v.en_name, "→", v.province.en_name);
@@ -67,7 +67,7 @@ jobs:
         working-directory: smoke
         run: |
           node --input-type=module -e '
-            import { getDistricts, search, meta } from "@sothikhorn019/cambodia-gazetteer";
+            import { getDistricts, search, meta } from "@sothikhorn/cambodia-gazetteer";
             if (getDistricts("12").length === 0 || search("Phnom Penh").length === 0) process.exit(1);
             console.log("ESM ok, dataset", meta.datasetVersion);
           '
