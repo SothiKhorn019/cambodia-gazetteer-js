@@ -143,4 +143,4 @@ npm version minor               # data refresh = minor (major if codes are remov
 git push --follow-tags          # CI publishes to npm and creates a GitHub Release
 ```
 
-`sync` checks every record before writing anything. Codes must be unique, and each record's code-derived parents must equal the nested parents in the release.
+`sync` checks every record before writing anything. Codes must be unique, and each record's code-derived parents must equal the nested parents in the release. The dataset repo is private, so `sync` authenticates with `GITHUB_TOKEN` or your `gh` login.

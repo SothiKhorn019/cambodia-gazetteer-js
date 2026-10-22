@@ -5,13 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/). A data refresh is a
 minor release, or a major one if codes are removed or renamed.
 
+## [Unreleased]
+
+- `npm run sync` authenticates with `GITHUB_TOKEN` or your `gh` login again, because
+  the dataset repo is private. Maintainer tooling only; the published package is unchanged.
+
 ## [1.0.1] — 2026-10-22
 
 Documentation only; the code and data are unchanged.
 
 - README and type docs describe the package on its own, with no references to the
   hosted web API.
-- The dataset repo is now public, so `npm run sync` no longer needs a GitHub token.
 
 ## [1.0.0] — 2026-10-22
 
