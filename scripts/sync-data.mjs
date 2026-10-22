@@ -158,9 +158,8 @@ for (const level of LEVELS) {
 
 const meta = {
   datasetVersion: tag,
+  // Only the public upstream: the dataset repo is private, so links to it would 404 for users.
   source: {
-    repository: `https://github.com/${SOURCE_REPO}`,
-    release: `https://github.com/${SOURCE_REPO}/releases/tag/${tag}`,
     upstream: "https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer",
   },
   counts,

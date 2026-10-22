@@ -172,4 +172,10 @@ describe("meta", () => {
     expect(meta.datasetVersion).toMatch(/^v\d+\.\d+\.\d+/);
     expect(meta.counts).toEqual({ provinces: 25, districts: 210, communes: 1652, villages: 14570 });
   });
+
+  it("links only to the public upstream source", () => {
+    expect(meta.source).toEqual({
+      upstream: "https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer",
+    });
+  });
 });

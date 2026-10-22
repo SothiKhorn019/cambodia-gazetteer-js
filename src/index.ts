@@ -13,8 +13,7 @@ export interface Meta {
   /** Release tag of the cambodia-gazetteer dataset bundled in this package, e.g. "v1.0.0". */
   readonly datasetVersion: string;
   readonly source: {
-    readonly repository: string;
-    readonly release: string;
+    /** The published dataset the data comes from (Open Development Cambodia). */
     readonly upstream: string;
   };
   readonly counts: {

@@ -127,7 +127,7 @@ All data is bundled: about 1.1 MB minified, or about 220 KB gzipped, and the vil
 
 ## Data source and license
 
-- **Data:** [Cambodia Gazetteer — Open Development Cambodia](https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer), from the NCDD admin database (25 provinces), dated 14 October 2024. It's processed by [cambodia-gazetteer](https://github.com/SothiKhorn019/cambodia-gazetteer). The publisher lists the dataset's license as *not specified*. Check that its terms fit your use.
+- **Data:** [Cambodia Gazetteer — Open Development Cambodia](https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer), from the NCDD admin database (25 provinces), dated 14 October 2024. The publisher lists the dataset's license as *not specified*. Check that its terms fit your use.
 - **Known gap in the source:** village `2010508` (ប៉ៃឡាំ) has no Latin name (`en_name: ""`).
 - **Code:** [MIT](LICENSE). This covers this package's code and packaging, not the underlying data.
 

@@ -7,8 +7,17 @@ minor release, or a major one if codes are removed or renamed.
 
 ## [Unreleased]
 
+### Removed
+
+- `meta.source.repository` and `meta.source.release`. They pointed to the private
+  dataset repo, so they returned 404 for users. `meta.source` now holds only the public
+  `upstream` source. Code that reads either removed field gets `undefined`.
+- The README link to the private dataset repo.
+
+### Changed
+
 - `npm run sync` authenticates with `GITHUB_TOKEN` or your `gh` login again, because
-  the dataset repo is private. Maintainer tooling only; the published package is unchanged.
+  the dataset repo is private. Maintainer tooling only, not part of the package.
 
 ## [1.0.1] — 2026-10-22
 
@@ -21,7 +30,7 @@ Documentation only; the code and data are unchanged.
 
 Initial release.
 
-- Bundles dataset [v1.0.0](https://github.com/SothiKhorn019/cambodia-gazetteer/releases/tag/v1.0.0):
+- Bundles dataset v1.0.0:
   25 provinces, 210 districts, 1,652 communes, 14,570 villages (NCDD, 14 October 2024).
 - `getProvinces/getDistricts/getCommunes/getVillages` and single lookups that return
   each record with its parents nested.
