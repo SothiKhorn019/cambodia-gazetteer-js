@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run lint:pkg
+      - name: Pack
+        if: matrix.node == 24
+        run: npm pack
+      - uses: actions/upload-artifact@v7
+        if: matrix.node == 24
+        with:
+          name: package
+          path: "*.tgz"
+
+  # The dev tooling needs Node 22+, but the published package targets Node 18+.
+  # Install the packed tarball on each runtime and use it from CJS and ESM.
+  runtime:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22, 24]
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: package
+      - name: Install tarball
+        run: |
+          mkdir smoke && cd smoke
+          npm init -y > /dev/null
+          npm install ../*.tgz
+      - name: require()
+        working-directory: smoke
+        run: |
+          node -e '
+            const g = require("@sothikhorn019/cambodia-gazetteer");
+            const v = g.getVillage("1020101");
+            if (g.getProvinces().length !== 25 || v.province.en_name !== "Banteay Meanchey") process.exit(1);
+            console.log("CJS ok:", v.en_name, "→", v.province.en_name);
+          '
+      - name: import
+        working-directory: smoke
+        run: |
+          node --input-type=module -e '
+            import { getDistricts, search, meta } from "@sothikhorn019/cambodia-gazetteer";
+            if (getDistricts("12").length === 0 || search("Phnom Penh").length === 0) process.exit(1);
+            console.log("ESM ok, dataset", meta.datasetVersion);
+          '

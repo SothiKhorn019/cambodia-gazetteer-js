@@ -1,0 +1,53 @@
+name: Publish
+
+# Push a v* tag (npm version minor && git push --follow-tags) to publish to npm.
+# Auth is npm trusted publishing (OIDC): configure it once on npmjs.com under
+# the package's Settings → Trusted Publisher → GitHub Actions, workflow publish.yml.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # GitHub Release
+  id-token: write # npm trusted publishing + provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+
+      - name: Tag matches package.json version
+        run: |
+          version="v$(node -p 'require("./package.json").version')"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json $version"; exit 1
+          fi
+
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run lint:pkg
+
+      # Skips a version that's already on npm (e.g. the first release, published by hand).
+      - name: npm publish
+        run: |
+          if npm view "$(node -p 'const p = require("./package.json"); `${p.name}@${p.version}`')" version > /dev/null 2>&1; then
+            echo "Already on npm, skipping publish."
+          else
+            npm publish --provenance --access public
+          fi
+
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
