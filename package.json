@@ -1,6 +1,6 @@
 {
   "name": "@sothikhorn/cambodia-gazetteer",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Cambodia's administrative divisions (province → district → commune → village) as bilingual Khmer/English data with typed lookups. Works offline.",
   "keywords": [
     "cambodia",

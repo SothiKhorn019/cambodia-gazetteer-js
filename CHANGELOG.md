@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/). A data refresh is a
 minor release, or a major one if codes are removed or renamed.
 
-## [Unreleased]
+## [2.0.0] — 2026-10-22
+
+Breaking only for code that reads `meta.source.repository` or `meta.source.release`.
+The lookup functions and the data are unchanged.
 
 ### Removed
 
@@ -38,5 +41,6 @@ Initial release.
 - Accepts zero-padded and numeric codes (`"0102"`, `102`).
 - ESM + CommonJS with TypeScript types; raw JSON under `data/`.
 
+[2.0.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.0.0
 [1.0.1]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v1.0.1
 [1.0.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v1.0.0
