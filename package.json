@@ -1,7 +1,7 @@
 {
   "name": "@sothikhorn/cambodia-gazetteer",
   "version": "2.0.0",
-  "description": "Cambodia's administrative divisions (province → district → commune → village) as bilingual Khmer/English data with typed lookups. Works offline.",
+  "description": "Cambodia's 25 provinces, 210 districts, 1,652 communes and 14,570 villages with Khmer and English names and NCDD codes. Offline data with TypeScript lookups and search.",
   "keywords": [
     "cambodia",
     "khmer",
@@ -12,7 +12,17 @@
     "villages",
     "administrative-divisions",
     "address",
-    "ncdd"
+    "ncdd",
+    "cambodia-address",
+    "khmer-address",
+    "phnom-penh",
+    "srok",
+    "khum",
+    "sangkat",
+    "phum",
+    "typescript",
+    "dataset",
+    "offline"
   ],
   "license": "MIT",
   "author": "Sothi Khorn",
@@ -44,7 +54,8 @@
   },
   "files": [
     "dist",
-    "data"
+    "data",
+    "llms.txt"
   ],
   "sideEffects": false,
   "engines": {

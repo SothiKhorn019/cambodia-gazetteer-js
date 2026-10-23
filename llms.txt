@@ -1,0 +1,93 @@
+# @sothikhorn/cambodia-gazetteer
+
+> Cambodia's administrative divisions — 25 provinces, 210 districts, 1,652 communes and 14,570 villages — with Khmer and English names and official NCDD codes, as an offline npm package with TypeScript types, lookups and search. Data: NCDD admin database, 14 October 2024.
+
+- Install: `npm install @sothikhorn/cambodia-gazetteer` (or `pnpm add`, `yarn add`, `bun add`).
+- Runs in Node 18+ and in browsers through any bundler, from ESM and CommonJS. No dependencies and no network calls: all data is bundled.
+- Every record is `{ code, name, en_name }`. `name` is Khmer and `en_name` is Latin script.
+
+## Functions
+
+- `getProvinces()`: all 25 provinces.
+- `getProvince(code)`: a province, or `undefined`.
+- `getDistricts(provinceCode?)`: the districts of a province, or all 210 if omitted.
+- `getDistrict(code)`: a district with its `province`, or `undefined`.
+- `getCommunes(districtCode?)`: the communes of a district, or all 1,652 if omitted.
+- `getCommune(code)`: a commune with its `district` and `province`, or `undefined`.
+- `getVillages(communeCode?)`: the villages of a commune, or all 14,570 if omitted.
+- `getVillage(code)`: a village with its `commune`, `district` and `province`, or `undefined`.
+- `lookup(code)`: any record with its parents, plus `level` ("province", "district", "commune" or "village") inferred from the code.
+- `search(query, { level?, limit? })`: records whose Khmer or Latin name contains `query`, case-insensitive. Exact matches come first, then prefix matches, then the rest.
+- `normalizeCode(code)`, `parentCode(code)`, `levelOf(code)`: code helpers.
+- `meta`: `{ datasetVersion, source: { upstream }, counts }`.
+
+## Codes
+
+- Codes are strings. A parent's code is the child's code without its last two digits.
+- Provinces 01–09 have no leading zero below province level: Banteay Meanchey `01`, district `102`, commune `10201`, village `1020101`.
+- Provinces 10–25 use 4-, 6- and 8-digit codes: Phnom Penh `12`, district `1201`, commune `120101`, village `12010101`.
+- Every function also accepts zero-padded codes (`"0102"`) and numbers (`102`).
+
+## Examples
+
+```js
+import { getDistricts, getVillage, search } from "@sothikhorn/cambodia-gazetteer";
+
+getDistricts("12").length; // 14: the khans of Phnom Penh
+
+const v = getVillage("12010101");
+[v.en_name, v.commune.en_name, v.district.en_name, v.province.en_name].join(", ");
+// "Phum 1, Tonle Basak, Chamkar Mon, Phnom Penh"
+
+// Village names repeat: 151 villages are named exactly "Thmei", in 24 provinces.
+search("Thmei", { level: "village" }).filter((r) => r.en_name === "Thmei").length; // 151
+```
+
+## Provinces
+
+| Code | Khmer | English (NCDD spelling) |
+|------|-------|---------|
+| `01` | បន្ទាយមានជ័យ | Banteay Meanchey |
+| `02` | បាត់ដំបង | Battambang |
+| `03` | កំពង់ចាម | Kampong Cham |
+| `04` | កំពង់ឆ្នាំង | Kampong Chhnang |
+| `05` | កំពង់ស្ពឺ | Kampong Speu |
+| `06` | កំពង់ធំ | Kampong Thom |
+| `07` | កំពត | Kampot |
+| `08` | កណ្ដាល | Kandal |
+| `09` | កោះកុង | Koh Kong |
+| `10` | ក្រចេះ | Kratie |
+| `11` | មណ្ឌលគិរី | Mondul Kiri |
+| `12` | ភ្នំពេញ | Phnom Penh |
+| `13` | ព្រះវិហារ | Preah Vihear |
+| `14` | ព្រៃវែង | Prey Veng |
+| `15` | ពោធិ៍សាត់ | Pursat |
+| `16` | រតនគិរី | Ratanak Kiri |
+| `17` | សៀមរាប | Siemreap |
+| `18` | ព្រះសីហនុ | Preah Sihanouk |
+| `19` | ស្ទឹងត្រែង | Stung Treng |
+| `20` | ស្វាយរៀង | Svay Rieng |
+| `21` | តាកែវ | Takeo |
+| `22` | ឧត្ដរមានជ័យ | Oddar Meanchey |
+| `23` | កែប | Kep |
+| `24` | ប៉ៃលិន | Pailin |
+| `25` | ត្បូងឃ្មុំ | Tboung Khmum |
+
+English names use NCDD spellings, which differ from some common ones: Siemreap (Siem Reap), Mondul Kiri (Mondulkiri), Ratanak Kiri (Ratanakiri), Preah Sihanouk (Sihanoukville), Tboung Khmum (Tbong Khmum). `search` matches the NCDD spelling only, so `search("Siem Reap")` returns the district of that name (`1710`), not the province. For a province, use its code (`getProvince("17")`) or the NCDD spelling.
+
+## Not included
+
+- No coordinates, boundaries or other GIS shapes.
+- No postal codes or statistics such as population.
+- It doesn't record whether a district is a srok, krong or khan, or whether a commune is a khum or sangkat.
+- It's a snapshot from 14 October 2024, so later administrative changes are missing.
+- One known gap in the source: village `2010508` has no Latin name (`en_name: ""`).
+
+## Links
+
+- [README](https://github.com/SothiKhorn019/cambodia-gazetteer-js#readme): full usage guide
+- [Type definitions](https://github.com/SothiKhorn019/cambodia-gazetteer-js/blob/main/src/types.ts)
+- [Raw JSON data](https://github.com/SothiKhorn019/cambodia-gazetteer-js/tree/main/data): `provinces.json`, `districts.json`, `communes.json`, `villages.json`, also importable from the package as `@sothikhorn/cambodia-gazetteer/data/*.json`
+- [Changelog](https://github.com/SothiKhorn019/cambodia-gazetteer-js/blob/main/CHANGELOG.md)
+- [npm package](https://www.npmjs.com/package/@sothikhorn/cambodia-gazetteer)
+- [Upstream dataset (Open Development Cambodia)](https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer)

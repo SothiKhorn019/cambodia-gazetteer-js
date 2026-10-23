@@ -1,21 +1,31 @@
-# Cambodia Gazetteer (npm)
+# Cambodia Gazetteer: provinces, districts, communes and villages in Khmer and English
 
 [![npm](https://img.shields.io/npm/v/@sothikhorn/cambodia-gazetteer)](https://www.npmjs.com/package/@sothikhorn/cambodia-gazetteer)
 [![CI](https://github.com/SothiKhorn019/cambodia-gazetteer-js/actions/workflows/ci.yml/badge.svg)](https://github.com/SothiKhorn019/cambodia-gazetteer-js/actions/workflows/ci.yml)
 
-Cambodia's administrative divisions — **province → district → commune → village** — in Khmer and English, bundled as data with typed lookups. Works offline and has no dependencies. Runs in Node 18+ and any bundler, from both ESM and CommonJS.
+Cambodia's administrative divisions, **province → district → commune → village**, as an npm package for JavaScript and TypeScript.
 
-| Level | Count |
-|-------|------:|
-| Provinces (ខេត្ត / រាជធានី) | 25 |
-| Districts (ស្រុក / ក្រុង / ខណ្ឌ) | 210 |
-| Communes (ឃុំ / សង្កាត់) | 1,652 |
-| Villages (ភូមិ) | 14,570 |
+- **Complete:** all 25 provinces, 210 districts, 1,652 communes and 14,570 villages, with official NCDD codes.
+- **Bilingual:** every record has a Khmer name (`name`) and a Latin-script name (`en_name`).
+- **Offline:** the data is bundled, so there are no network calls and no dependencies.
+- **Typed:** TypeScript types are included. It works from ESM and CommonJS, in Node 18+ and in any bundler.
+- **Searchable:** look up any code, list a division's children, or search by Khmer or English name.
+- **Current:** NCDD admin database, dated 14 October 2024.
+
+AI assistants and tools can read a compact reference in [`llms.txt`](llms.txt).
+
+| Level | Khmer terms | Count |
+|-------|-------------|------:|
+| Province | ខេត្ត *khaet* (province) / រាជធានី *reachthani* (capital: Phnom Penh) | 25 |
+| District | ស្រុក *srok* / ក្រុង *krong* (municipality) / ខណ្ឌ *khan* (Phnom Penh district) | 210 |
+| Commune | ឃុំ *khum* / សង្កាត់ *sangkat* (urban commune) | 1,652 |
+| Village | ភូមិ *phum* | 14,570 |
 
 ## Install
 
 ```sh
 npm install @sothikhorn/cambodia-gazetteer
+# or: pnpm add / yarn add / bun add @sothikhorn/cambodia-gazetteer
 ```
 
 ## Usage
@@ -91,6 +101,51 @@ import provinces from "@sothikhorn/cambodia-gazetteer/data/provinces.json" with 
 // also: data/districts.json, data/communes.json, data/villages.json, data/meta.json
 ```
 
+## Common tasks
+
+### List the districts (khans) of Phnom Penh
+
+```js
+import { getDistricts } from "@sothikhorn/cambodia-gazetteer";
+
+const khans = getDistricts("12"); // Phnom Penh is province 12
+khans.length; // 14
+khans[0];     // { code: "1201", name: "ចំការមន", en_name: "Chamkar Mon" }
+```
+
+### Build a full address from a village code
+
+```js
+import { getVillage } from "@sothikhorn/cambodia-gazetteer";
+
+const v = getVillage("12010101");
+[v.name, v.commune.name, v.district.name, v.province.name].join(", ");
+// "ភូមិ ១, ទន្លេបាសាក់, ចំការមន, ភ្នំពេញ"
+[v.en_name, v.commune.en_name, v.district.en_name, v.province.en_name].join(", ");
+// "Phum 1, Tonle Basak, Chamkar Mon, Phnom Penh"
+```
+
+### Find a village by name
+
+Village names repeat across the country. For example, 151 villages are named exactly "Thmei", in 24 provinces. So check each result's `district` and `province`:
+
+```js
+import { search } from "@sothikhorn/cambodia-gazetteer";
+
+const matches = search("Thmei", { level: "village" }).filter((v) => v.en_name === "Thmei");
+matches.map((v) => `${v.code}: ${v.district.en_name}, ${v.province.en_name}`);
+```
+
+### Check whether a code is valid
+
+```js
+import { lookup, levelOf } from "@sothikhorn/cambodia-gazetteer";
+
+levelOf("10201");    // "commune" (from the code's length)
+lookup("10201");     // the commune with its district and province
+lookup("99999");     // undefined: no such commune
+```
+
 ## Functions
 
 | Function | Returns |
@@ -121,9 +176,55 @@ Codes are NCDD's, exactly as they appear in the source data. Provinces 01–09 h
 
 A parent's code is the child's code without its last two digits. Every function also accepts the zero-padded form and numbers, so `getDistrict("0102")`, `getDistrict("102")` and `getDistrict(102)` all return Mongkol Borei. `normalizeCode`, `parentCode` and `levelOf` expose these rules.
 
+## Provinces
+
+| Code | Khmer | English (NCDD spelling) |
+|------|-------|---------|
+| `01` | បន្ទាយមានជ័យ | Banteay Meanchey |
+| `02` | បាត់ដំបង | Battambang |
+| `03` | កំពង់ចាម | Kampong Cham |
+| `04` | កំពង់ឆ្នាំង | Kampong Chhnang |
+| `05` | កំពង់ស្ពឺ | Kampong Speu |
+| `06` | កំពង់ធំ | Kampong Thom |
+| `07` | កំពត | Kampot |
+| `08` | កណ្ដាល | Kandal |
+| `09` | កោះកុង | Koh Kong |
+| `10` | ក្រចេះ | Kratie |
+| `11` | មណ្ឌលគិរី | Mondul Kiri |
+| `12` | ភ្នំពេញ | Phnom Penh |
+| `13` | ព្រះវិហារ | Preah Vihear |
+| `14` | ព្រៃវែង | Prey Veng |
+| `15` | ពោធិ៍សាត់ | Pursat |
+| `16` | រតនគិរី | Ratanak Kiri |
+| `17` | សៀមរាប | Siemreap |
+| `18` | ព្រះសីហនុ | Preah Sihanouk |
+| `19` | ស្ទឹងត្រែង | Stung Treng |
+| `20` | ស្វាយរៀង | Svay Rieng |
+| `21` | តាកែវ | Takeo |
+| `22` | ឧត្ដរមានជ័យ | Oddar Meanchey |
+| `23` | កែប | Kep |
+| `24` | ប៉ៃលិន | Pailin |
+| `25` | ត្បូងឃ្មុំ | Tboung Khmum |
+
+English names follow NCDD's spelling, which differs from some common ones:
+- Siemreap (Siem Reap)
+- Mondul Kiri (Mondulkiri)
+- Ratanak Kiri (Ratanakiri)
+- Preah Sihanouk (Sihanoukville)
+- Tboung Khmum (Tbong Khmum)
+
+`search` only matches the NCDD spelling, so `search("Siem Reap")` finds the *district* of that name (`1710`), not the province. To get a province, use its code (`getProvince("17")`) or the NCDD spelling.
+
 ## Bundle size
 
 All data is bundled: about 1.1 MB minified, or about 220 KB gzipped, and the village list is most of that. Each level is only built on first use, and bundlers drop levels you never call. A bundle that only uses `getProvinces` comes to about 2 KB.
+
+## What's not included
+
+- No coordinates, boundaries or other GIS shapes. This is a list of names and codes, not a map.
+- No postal codes or statistics such as population.
+- No division types. It doesn't record whether a district is a srok, krong or khan, or whether a commune is a khum or sangkat.
+- No changes after 14 October 2024, the date of the NCDD snapshot.
 
 ## Data source and license
 

@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/). A data refresh is a
 minor release, or a major one if codes are removed or renamed.
 
+## [Unreleased]
+
+Documentation only; the code and data are unchanged.
+
+- Added `llms.txt`, a compact reference for AI assistants and tools. It's also shipped in the package.
+- README: an at-a-glance summary, Khmer terms with their romanized spellings, common tasks, a province table,
+  a note on NCDD spellings (for example, "Siemreap"), and what's not included.
+- npm description and keywords now name the counts and common search terms.
+
 ## [2.0.0] — 2026-10-22
 
 Breaking only for code that reads `meta.source.repository` or `meta.source.release`.
