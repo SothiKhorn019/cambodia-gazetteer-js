@@ -12,6 +12,7 @@ import {
   meta,
   search,
 } from "../src/index";
+import { PROVINCE_ALIASES } from "../src/aliases";
 
 const BANTEAY_MEANCHEY = { code: "01", name: "បន្ទាយមានជ័យ", en_name: "Banteay Meanchey" };
 const MONGKOL_BOREI = { code: "102", name: "មង្គលបូរី", en_name: "Mongkol Borei" };
@@ -164,6 +165,60 @@ describe("search", () => {
 
   it("returns [] for an empty query", () => {
     expect(search("   ")).toEqual([]);
+  });
+});
+
+describe("search: alternative spellings", () => {
+  const provinceCodes = (query: string) => search(query, { level: "province" }).map((r) => r.code);
+
+  it.each([
+    ["Siem Reap", "17"],
+    ["Mondulkiri", "11"],
+    ["Ratanakiri", "16"],
+    ["Sihanoukville", "18"],
+    ["Tbong Khmum", "25"],
+    ["Kompong Cham", "03"],
+    ["Otdar Meanchey", "22"],
+    ["Stoeng Treng", "19"],
+    ["Batdambang", "02"],
+    ["Pouthisat", "15"],
+  ])("%s finds province %s", (query, code) => {
+    expect(provinceCodes(query)).toEqual([code]);
+  });
+
+  it("ignores case, accents, spaces and hyphens in Latin names", () => {
+    for (const query of ["siem-reap", "SIEMREAP", "Siemréap", "  Siem   Reap "]) {
+      expect(provinceCodes(query), query).toEqual(["17"]);
+    }
+    expect(provinceCodes("Kratié")).toEqual(["10"]);
+    expect(provinceCodes("Takéo")).toEqual(["21"]);
+    expect(provinceCodes("Banteay Mean Chey")).toEqual(["01"]);
+    expect(provinceCodes("Stœng Trêng")).toEqual(["19"]);
+  });
+
+  it("puts the province before the district of the same name", () => {
+    expect(search("Siem Reap").map((r) => `${r.level} ${r.code}`)).toEqual(["province 17", "district 1710"]);
+  });
+
+  it("keeps Khmer search unchanged and doesn't match everything on punctuation", () => {
+    expect(provinceCodes("សៀមរាប")).toEqual(["17"]);
+    // Compacts to "" for Latin names, which must not count as a match for all of them.
+    expect(search("!?")).toEqual([]);
+  });
+
+  it("has aliases only for real provinces, each new and unambiguous", () => {
+    const compact = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const names = new Set(getProvinces().map((p) => compact(p.en_name)));
+    const seen = new Set<string>();
+    for (const [code, aliases] of Object.entries(PROVINCE_ALIASES)) {
+      expect(getProvince(code), code).toBeDefined();
+      for (const alias of aliases) {
+        const key = compact(alias);
+        expect(names.has(key), `${alias} duplicates an NCDD name`).toBe(false);
+        expect(seen.has(key), `${alias} listed twice`).toBe(false);
+        seen.add(key);
+      }
+    }
   });
 });
 

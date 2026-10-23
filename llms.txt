@@ -17,7 +17,7 @@
 - `getVillages(communeCode?)`: the villages of a commune, or all 14,570 if omitted.
 - `getVillage(code)`: a village with its `commune`, `district` and `province`, or `undefined`.
 - `lookup(code)`: any record with its parents, plus `level` ("province", "district", "commune" or "village") inferred from the code.
-- `search(query, { level?, limit? })`: records whose Khmer or Latin name contains `query`, case-insensitive. Exact matches come first, then prefix matches, then the rest.
+- `search(query, { level?, limit? })`: records whose Khmer or Latin name contains `query`. Latin matching ignores case, accents, spaces and hyphens, and provinces also match common alternative spellings (see below). Exact matches come first, then prefix matches, then the rest.
 - `normalizeCode(code)`, `parentCode(code)`, `levelOf(code)`: code helpers.
 - `meta`: `{ datasetVersion, source: { upstream }, counts }`.
 
@@ -73,7 +73,23 @@ search("Thmei", { level: "village" }).filter((r) => r.en_name === "Thmei").lengt
 | `24` | ប៉ៃលិន | Pailin |
 | `25` | ត្បូងឃ្មុំ | Tboung Khmum |
 
-English names use NCDD spellings, which differ from some common ones: Siemreap (Siem Reap), Mondul Kiri (Mondulkiri), Ratanak Kiri (Ratanakiri), Preah Sihanouk (Sihanoukville), Tboung Khmum (Tbong Khmum). `search` matches the NCDD spelling only, so `search("Siem Reap")` returns the district of that name (`1710`), not the province. For a province, use its code (`getProvince("17")`) or the NCDD spelling.
+English names (`en_name`) use NCDD spellings. `search` also matches these common alternative spellings of province names:
+- Siem Reap / Siem Reab (17)
+- Mondulkiri / Mondol Kiri (11)
+- Ratanakiri / Rattanakiri / Rotanokiri (16)
+- Sihanoukville / Kampong Som (18)
+- Tbong Khmum (25)
+- Otdar Meanchey / Oddor Meanchey (22)
+- Stoeng Treng / Steung Treng (19)
+- Batdambang (02)
+- Pouthisat (15)
+- Kratié / Kracheh (10)
+- Takéo / Takev (21)
+- Kaoh Kong (09)
+- Phnum Penh (12)
+- "Kompong" for "Kampong" (03–06), plus Kampong Spoe (05) and Kampong Thum (06)
+
+`search("Siem Reap")` returns province `17` first, then the district of that name (`1710`). Lookups by code don't depend on spelling.
 
 ## Not included
 

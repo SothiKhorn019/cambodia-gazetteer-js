@@ -5,13 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/). A data refresh is a
 minor release, or a major one if codes are removed or renamed.
 
-## [Unreleased]
+## [2.1.0] — 2026-10-23
 
-Documentation only; the code and data are unchanged.
+### Added
 
-- Added `llms.txt`, a compact reference for AI assistants and tools. It's also shipped in the package.
-- README: an at-a-glance summary, Khmer terms with their romanized spellings, common tasks, a province table,
-  a note on NCDD spellings (for example, "Siemreap"), and what's not included.
+- `search` accepts common alternative spellings of province names, such as "Siem Reap",
+  "Mondulkiri", "Ratanakiri", "Sihanoukville" and "Tbong Khmum", and the UN romanization
+  ("Batdambang", "Otdar Meanchey"). `search("Siem Reap")` now returns province `17`
+  before the district of the same name.
+- `llms.txt`, a compact reference for AI assistants and tools. It's also shipped in the package.
+
+### Changed
+
+- Latin-name matching in `search` ignores accents, spaces and hyphens as well as case, so
+  "Kratié", "siem-reap" and "Banteay Mean Chey" match. Results are a superset of 2.0.0's.
+  The one exception is that a lone punctuation query no longer matches Latin names.
+- README: an at-a-glance summary, Khmer terms with their romanized spellings, common tasks,
+  a province table with accepted spellings, and what's not included.
 - npm description and keywords now name the counts and common search terms.
 
 ## [2.0.0] — 2026-10-22
@@ -50,6 +60,7 @@ Initial release.
 - Accepts zero-padded and numeric codes (`"0102"`, `102`).
 - ESM + CommonJS with TypeScript types; raw JSON under `data/`.
 
+[2.1.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.1.0
 [2.0.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.0.0
 [1.0.1]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v1.0.1
 [1.0.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v1.0.0

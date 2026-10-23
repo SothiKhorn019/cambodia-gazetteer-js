@@ -1,6 +1,6 @@
 {
   "name": "@sothikhorn/cambodia-gazetteer",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Cambodia's 25 provinces, 210 districts, 1,652 communes and 14,570 villages with Khmer and English names and NCDD codes. Offline data with TypeScript lookups and search.",
   "keywords": [
     "cambodia",

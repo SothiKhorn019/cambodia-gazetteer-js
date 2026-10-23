@@ -66,10 +66,14 @@ lookup("10201");
 
 search("phnom penh");                       // Latin names, case-insensitive
 search("ភ្នំពេញ", { level: "province" });     // Khmer names
+search("Siem Reap", { level: "province" }); // common spellings work too: Siemreap (17)
 search("Banteay", { level: ["district", "commune"], limit: 10 });
 ```
 
-`search` matches anywhere in the Khmer or Latin name. Exact matches come first, then names that start with the query, then the rest. Within each group, provinces come before districts, communes and villages.
+`search` matches anywhere in the Khmer or Latin name.
+- **Latin matching is forgiving:** it ignores case, accents, spaces and hyphens, so "Siem Reap", "siem-reap" and "Siemreap" are the same query.
+- **Province spellings:** provinces also match their [common alternative spellings](#provinces).
+- **Ordering:** exact matches come first, then names that start with the query, then the rest. Within each group, provinces come before districts, communes and villages.
 
 ### Cascading dropdowns
 
@@ -206,14 +210,26 @@ A parent's code is the child's code without its last two digits. Every function 
 | `24` | ប៉ៃលិន | Pailin |
 | `25` | ត្បូងឃ្មុំ | Tboung Khmum |
 
-English names follow NCDD's spelling, which differs from some common ones:
-- Siemreap (Siem Reap)
-- Mondul Kiri (Mondulkiri)
-- Ratanak Kiri (Ratanakiri)
-- Preah Sihanouk (Sihanoukville)
-- Tboung Khmum (Tbong Khmum)
+English names (`en_name`) follow NCDD's spelling. `search` also accepts these other common spellings, including Wikipedia's, older "Kompong" forms and the UN romanization:
 
-`search` only matches the NCDD spelling, so `search("Siem Reap")` finds the *district* of that name (`1710`), not the province. To get a province, use its code (`getProvince("17")`) or the NCDD spelling.
+| NCDD name | `search` also matches |
+|-----------|----------------------|
+| Siemreap (`17`) | Siem Reap, Siem Reab |
+| Mondul Kiri (`11`) | Mondulkiri, Mondol Kiri |
+| Ratanak Kiri (`16`) | Ratanakiri, Rattanakiri, Rotanokiri |
+| Preah Sihanouk (`18`) | Sihanoukville, Kampong Som |
+| Tboung Khmum (`25`) | Tbong Khmum |
+| Oddar Meanchey (`22`) | Otdar Meanchey, Oddor Meanchey |
+| Stung Treng (`19`) | Stoeng Treng, Steung Treng |
+| Battambang (`02`) | Batdambang |
+| Pursat (`15`) | Pouthisat |
+| Kratie (`10`) | Kratié, Kracheh |
+| Takeo (`21`) | Takéo, Takev |
+| Koh Kong (`09`) | Kaoh Kong |
+| Phnom Penh (`12`) | Phnum Penh |
+| Kampong Cham, Chhnang, Speu, Thom (`03`–`06`) | Kompong Cham, Kompong Chhnang, Kompong Speu, Kompong Thom, Kampong Spoe, Kampong Thum |
+
+`search("Siem Reap")` returns the province first, then the district of the same name (`1710`). Lookups by code (`getProvince("17")`) don't depend on spelling at all.
 
 ## Bundle size
 
