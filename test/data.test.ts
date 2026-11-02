@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import communes from "../data/communes.json";
 import districts from "../data/districts.json";
@@ -35,6 +36,16 @@ describe("bundled data", () => {
       const parents = new Set(chain[i - 1]!.map((r) => r.code));
       const orphans = chain[i]!.filter((r) => !parents.has(parentCode(r.code)));
       expect(orphans).toEqual([]);
+    }
+  });
+
+  it("splits villages into one file per province, each holding exactly that province's", () => {
+    const dir = new URL("../data/villages/", import.meta.url);
+    expect(readdirSync(dir).sort()).toEqual(provinces.map((p) => `${p.code}.json`));
+    for (const { code } of provinces) {
+      const file = JSON.parse(readFileSync(new URL(`${code}.json`, dir), "utf8"));
+      const expected = villages.filter((v) => parentCode(parentCode(parentCode(v.code))) === code);
+      expect(file, code).toEqual(expected);
     }
   });
 });

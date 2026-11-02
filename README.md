@@ -78,15 +78,17 @@ search("Banteay", { level: ["district", "commune"], limit: 10 });
 ### Cascading dropdowns
 
 ```js
-import { getProvinces, getDistricts, getCommunes, getVillages } from "@sothikhorn/cambodia-gazetteer";
+import { getProvinces, getDistricts, getCommunes, loadVillages } from "@sothikhorn/cambodia-gazetteer";
 
 const options = (items) => items.map((d) => ({ value: d.code, label: `${d.name} (${d.en_name})` }));
 
 provinceSelect.options = options(getProvinces());
 provinceSelect.onchange = (e) => (districtSelect.options = options(getDistricts(e.target.value)));
 districtSelect.onchange = (e) => (communeSelect.options = options(getCommunes(e.target.value)));
-communeSelect.onchange  = (e) => (villageSelect.options = options(getVillages(e.target.value)));
+communeSelect.onchange  = async (e) => (villageSelect.options = options(await loadVillages(e.target.value)));
 ```
+
+`loadVillages` gives the same list as `getVillages`, but loads only the villages of the commune's province, so a browser downloads one small chunk instead of all 14,570 villages. See [Bundle size](#bundle-size).
 
 ### TypeScript
 
@@ -102,7 +104,8 @@ The data files ship with the package if you'd rather use them directly. They hol
 
 ```js
 import provinces from "@sothikhorn/cambodia-gazetteer/data/provinces.json" with { type: "json" };
-// also: data/districts.json, data/communes.json, data/villages.json, data/meta.json
+// also: data/districts.json, data/communes.json, data/villages.json, data/meta.json,
+// and data/villages/{provinceCode}.json for one province's villages
 ```
 
 ## Common tasks
@@ -162,6 +165,7 @@ lookup("99999");     // undefined: no such commune
 | `getCommune(code)` | a commune with its `district` and `province`, or `undefined` |
 | `getVillages(communeCode?)` | villages of a commune (all 14,570 if omitted) |
 | `getVillage(code)` | a village with its `commune`, `district` and `province`, or `undefined` |
+| `loadVillages(communeCode)` | a Promise of a commune's villages, loading only its province's (see [Bundle size](#bundle-size)) |
 | `lookup(code)` | any record with its parents and a `level`, inferred from the code |
 | `search(query, { level?, limit? })` | matching records with their parents and a `level` |
 | `normalizeCode(code)` · `parentCode(code)` · `levelOf(code)` | code helpers (see below) |
@@ -234,6 +238,10 @@ English names (`en_name`) follow NCDD's spelling. `search` also accepts these ot
 ## Bundle size
 
 All data is bundled: about 1.1 MB minified, or about 220 KB gzipped, and the village list is most of that. Each level is only built on first use, and bundlers drop levels you never call. A bundle that only uses `getProvinces` comes to about 2 KB.
+
+In a browser, use `loadVillages` rather than `getVillages`, `getVillage`, `lookup` or `search`, which all need the whole village list. Provinces, districts and communes then come to about 130 KB (21 KB brotli). Each province's villages load as their own chunk when first asked for: about 40 KB on average (7 KB brotli), and 96 KB (15 KB brotli) for the largest, Kampong Speu.
+
+The CommonJS build can't be split into chunks, so it carries the villages twice, whole and by province. `dist/index.cjs` is about 2.2 MB.
 
 ## What's not included
 

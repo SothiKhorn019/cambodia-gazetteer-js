@@ -8,6 +8,7 @@ import {
   getProvinces,
   getVillage,
   getVillages,
+  loadVillages,
   lookup,
   meta,
   search,
@@ -67,6 +68,37 @@ describe("lists", () => {
     expect(getProvinces()).toHaveLength(25);
     expect(() => {
       (getProvinces()[0] as { name: string }).name = "x";
+    }).toThrow(TypeError);
+  });
+});
+
+describe("loadVillages", () => {
+  it("resolves to the same villages as getVillages, for every commune", async () => {
+    for (const commune of getCommunes()) {
+      expect(await loadVillages(commune.code), commune.code).toEqual(getVillages(commune.code));
+    }
+  });
+
+  it("accepts padded, unpadded and numeric codes", async () => {
+    expect(await loadVillages("010201")).toEqual(getVillages("10201"));
+    expect(await loadVillages(10201)).toEqual(getVillages("10201"));
+    expect((await loadVillages("10201"))[0]).toEqual(OU_THUM);
+  });
+
+  it("resolves to [] for an unknown commune or a code that isn't a commune's", async () => {
+    expect(await loadVillages("10299")).toEqual([]); // province 01 exists, the commune doesn't
+    expect(await loadVillages("990101")).toEqual([]); // no province 99
+    expect(await loadVillages("102")).toEqual([]); // a district
+    expect(await loadVillages("1020101")).toEqual([]); // a village
+    expect(await loadVillages("abc")).toEqual([]);
+  });
+
+  it("returns copies, and records cannot be mutated", async () => {
+    (await loadVillages("10201")).pop();
+    expect(await loadVillages("10201")).toEqual(getVillages("10201"));
+    const [first] = await loadVillages("10201");
+    expect(() => {
+      (first as { name: string }).name = "x";
     }).toThrow(TypeError);
   });
 });

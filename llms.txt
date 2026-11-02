@@ -16,6 +16,7 @@
 - `getCommune(code)`: a commune with its `district` and `province`, or `undefined`.
 - `getVillages(communeCode?)`: the villages of a commune, or all 14,570 if omitted.
 - `getVillage(code)`: a village with its `commune`, `district` and `province`, or `undefined`.
+- `loadVillages(communeCode)`: a Promise of the villages of a commune, loading only that province's villages. Prefer it in browsers: `getVillages`, `getVillage`, `lookup` and `search` bundle all 14,570 villages.
 - `lookup(code)`: any record with its parents, plus `level` ("province", "district", "commune" or "village") inferred from the code.
 - `search(query, { level?, limit? })`: records whose Khmer or Latin name contains `query`. Latin matching ignores case, accents, spaces and hyphens, and provinces also match common alternative spellings (see below). Exact matches come first, then prefix matches, then the rest.
 - `normalizeCode(code)`, `parentCode(code)`, `levelOf(code)`: code helpers.
@@ -103,7 +104,7 @@ English names (`en_name`) use NCDD spellings. `search` also matches these common
 
 - [README](https://github.com/SothiKhorn019/cambodia-gazetteer-js#readme): full usage guide
 - [Type definitions](https://github.com/SothiKhorn019/cambodia-gazetteer-js/blob/main/src/types.ts)
-- [Raw JSON data](https://github.com/SothiKhorn019/cambodia-gazetteer-js/tree/main/data): `provinces.json`, `districts.json`, `communes.json`, `villages.json`, also importable from the package as `@sothikhorn/cambodia-gazetteer/data/*.json`
+- [Raw JSON data](https://github.com/SothiKhorn019/cambodia-gazetteer-js/tree/main/data): `provinces.json`, `districts.json`, `communes.json`, `villages.json`, `villages/{provinceCode}.json`, also importable from the package as `@sothikhorn/cambodia-gazetteer/data/*.json`
 - [Changelog](https://github.com/SothiKhorn019/cambodia-gazetteer-js/blob/main/CHANGELOG.md)
 - [npm package](https://www.npmjs.com/package/@sothikhorn/cambodia-gazetteer)
 - [Upstream dataset (Open Development Cambodia)](https://data.opendevelopmentmekong.net/dataset/cambodia-gazetteer)

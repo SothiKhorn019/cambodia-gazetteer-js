@@ -62,12 +62,20 @@ jobs:
             const v = g.getVillage("1020101");
             if (g.getProvinces().length !== 25 || v.province.en_name !== "Banteay Meanchey") process.exit(1);
             console.log("CJS ok:", v.en_name, "→", v.province.en_name);
+            g.loadVillages("10201").then((list) => {
+              if (list[0].en_name !== "Ou Thum") process.exit(1);
+              console.log("CJS loadVillages ok:", list.length, "villages");
+            });
           '
       - name: import
         working-directory: smoke
         run: |
           node --input-type=module -e '
-            import { getDistricts, search, meta } from "@sothikhorn/cambodia-gazetteer";
+            import { getDistricts, loadVillages, search, meta } from "@sothikhorn/cambodia-gazetteer";
             if (getDistricts("12").length === 0 || search("Phnom Penh").length === 0) process.exit(1);
             console.log("ESM ok, dataset", meta.datasetVersion);
+            // Loads a province chunk from dist/, so this proves the chunk files ship and resolve.
+            const villages = await loadVillages("120101");
+            if (villages[0].en_name !== "Phum 1") process.exit(1);
+            console.log("ESM loadVillages ok:", villages.length, "villages");
           '

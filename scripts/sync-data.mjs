@@ -8,6 +8,8 @@
  * GitHub Release of SothiKhorn019/cambodia-gazetteer, verifies them, and writes:
  *
  *   data/{level}.json   lean {code,name,en_name}, release order, one record per line
+ *   data/villages/{province}.json   the same villages again, one file per province,
+ *                       for loadVillages()
  *   data/meta.json      dataset version, source, counts
  *
  * The package derives every parent from the code alone (drop the last two digits;
@@ -16,7 +18,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 
 const SOURCE_REPO = "SothiKhorn019/cambodia-gazetteer";
 const DATA_DIR = new URL("../data/", import.meta.url);
@@ -148,12 +150,29 @@ try {
   previous = undefined;
 }
 
+const lines = (records) => `[\n${records.map((r) => JSON.stringify(r)).join(",\n")}\n]\n`;
+
 const counts = {};
+const lean = {};
 for (const level of LEVELS) {
-  const lean = merged[level].map(({ code, name, en_name }) => ({ code, name, en_name }));
-  const body = `[\n${lean.map((r) => JSON.stringify(r)).join(",\n")}\n]\n`;
-  await writeFile(new URL(`${level}.json`, DATA_DIR), body);
-  counts[level] = lean.length;
+  lean[level] = merged[level].map(({ code, name, en_name }) => ({ code, name, en_name }));
+  await writeFile(new URL(`${level}.json`, DATA_DIR), lines(lean[level]));
+  counts[level] = lean[level].length;
+}
+
+// loadVillages() imports one of these at a time, so a bundler gives each province its
+// own chunk. Rewritten from scratch so no province from an older release lingers.
+const villagesDir = new URL("villages/", DATA_DIR);
+await rm(villagesDir, { recursive: true, force: true });
+await mkdir(villagesDir);
+const byProvince = new Map();
+for (const village of lean.villages) {
+  const province = parentCode(parentCode(parentCode(village.code)));
+  if (!byProvince.has(province)) byProvince.set(province, []);
+  byProvince.get(province).push(village);
+}
+for (const [province, villages] of byProvince) {
+  await writeFile(new URL(`${province}.json`, villagesDir), lines(villages));
 }
 
 const meta = {

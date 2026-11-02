@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/). A data refresh is a
 minor release, or a major one if codes are removed or renamed.
 
+## [2.2.0] — 2026-11-02
+
+### Added
+
+- `loadVillages(communeCode)`: a commune's villages, the same list `getVillages(communeCode)`
+  returns, as a Promise that loads only the villages of that commune's province. Bundlers put
+  each province in its own chunk, so a browser app that never calls `getVillages`,
+  `getVillage`, `lookup` or `search` no longer bundles all 14,570 villages. Provinces,
+  districts and communes come to about 130 KB, and a province's villages to about 40 KB on
+  average (96 KB at most).
+- `data/villages/{provinceCode}.json`: the villages again, one file per province. `npm run sync`
+  writes them.
+
+### Changed
+
+- The CommonJS build can't be split into chunks, so `dist/index.cjs` carries the villages a
+  second time, by province: about 2.2 MB, up from 1.1 MB. `require()` takes a few milliseconds
+  longer. The ESM build only gains the province chunks.
+
 ## [2.1.0] — 2026-10-23
 
 ### Added
@@ -60,6 +79,7 @@ Initial release.
 - Accepts zero-padded and numeric codes (`"0102"`, `102`).
 - ESM + CommonJS with TypeScript types; raw JSON under `data/`.
 
+[2.2.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.2.0
 [2.1.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.1.0
 [2.0.0]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v2.0.0
 [1.0.1]: https://github.com/SothiKhorn019/cambodia-gazetteer-js/releases/tag/v1.0.1

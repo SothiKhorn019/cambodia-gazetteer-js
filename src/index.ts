@@ -3,7 +3,7 @@ import metaData from "../data/meta.json";
 export { getProvinces, getProvince } from "./provinces";
 export { getDistricts, getDistrict } from "./districts";
 export { getCommunes, getCommune } from "./communes";
-export { getVillages, getVillage } from "./villages";
+export { getVillages, getVillage, loadVillages } from "./villages";
 export { lookup } from "./lookup";
 export { search, type SearchOptions } from "./search";
 export { normalizeCode, parentCode, levelOf } from "./codes";
